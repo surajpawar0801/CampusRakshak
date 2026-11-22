@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CampusRakshak | College Safety Portal</title>
+<title>CampusRakshak 3.0 | College Safety Portal</title>
 <style>
 :root{
   --navy:#10294c;--navy-2:#173b68;--blue:#2864c5;--blue-dark:#1e4f9e;
@@ -46,6 +46,25 @@ button:hover{background:var(--blue-dark);box-shadow:0 5px 14px rgba(40,100,197,.
 footer{text-align:center;color:var(--muted);padding:24px 16px 30px;font-size:13px;line-height:1.8}
 footer strong{display:inline-block;color:var(--navy-2);font-size:14px;letter-spacing:.2px}
 @media(max-width:650px){.grid{grid-template-columns:1fr}.wide{grid-column:auto}.container{padding:18px 12px}.card{padding:19px 16px;border-radius:15px}header{padding:21px 16px}.brand-mark{width:45px;height:45px;flex-basis:45px;border-radius:13px}.toolbar{align-items:stretch}.toolbar>*{min-width:100%}.toolbar button{width:100%;margin:5px 0}button{padding:12px 15px}}
+
+@media print{header,footer,button,.tool-tile,#authCard,#pendingCard,#rejectedCard,#headSection>.card:first-child{display:none!important}body{background:#fff!important;color:#111!important}.card,.report{box-shadow:none!important;border:1px solid #bbb!important;break-inside:avoid}}
+/* CampusRakshak 2.0 enhancements */
+body.dark{--bg:#0b1220;--surface:#111c2e;--text:#e5edf8;--muted:#9aabc2;--line:#26364d;background:#0b1220;color:var(--text)}
+body.dark .card,body.dark .report,body.dark .student{background:var(--surface);border-color:var(--line)}
+body.dark input,body.dark select,body.dark textarea{background:#0b1526;color:#e5edf8;border-color:#344761}
+body.dark h2,body.dark h3,body.dark footer strong{color:#c8dcff}
+body.dark .tracking{background:#0b1526;border-color:#344761}
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.tool-tile{border:1px solid var(--line);border-radius:13px;padding:15px;background:rgba(40,100,197,.035)}
+.tool-tile h3{margin:0 0 8px}.tool-tile p{margin:5px 0 10px}
+.tool-tile button{margin:3px 2px}
+.qr-preview{display:block;width:180px;height:180px;object-fit:contain;background:#fff;padding:8px;border:1px solid var(--line);border-radius:10px;margin-top:10px}
+.inline-field{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.inline-field input{flex:1;min-width:150px}
+.audit-entry{padding:8px 10px;border-bottom:1px solid var(--line);font-size:13px}
+@media(max-width:650px){.tools-grid{grid-template-columns:1fr}}
+.timeline{border-left:3px solid #bfdbfe;margin:12px 0 12px 7px;padding-left:14px}.timeline-item{position:relative;padding:5px 0 9px;font-size:13px}.timeline-item:before{content:"";position:absolute;left:-21px;top:11px;width:10px;height:10px;border-radius:50%;background:#2864c5}.urgent-report{border:2px solid #ef4444!important}.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}.metric{padding:12px;border-radius:12px;background:#eff6ff;border:1px solid #dbeafe}.metric strong{display:block;font-size:23px;color:#173b68}.metric span{font-size:12px;color:#475569}
+
 </style>
 </head>
 <body>
@@ -103,12 +122,55 @@ footer strong{display:inline-block;color:var(--navy-2);font-size:14px;letter-spa
         </select></div>
         <div><label>Issue Location</label><input id="location" required placeholder="Building, floor, room"></div>
         <div class="wide"><label>Description</label><textarea id="description" required placeholder="Describe the problem"></textarea></div>
-        <div class="wide"><label>Attach Photos / Videos (Optional)</label><input id="reportMedia" type="file" accept="image/*,video/*" multiple><p class="upload-note">Maximum 5 files per report. Upload only relevant evidence; avoid sensitive personal information.</p></div>
+        <div class="wide"><label><input id="anonymousReport" type="checkbox" style="width:auto;margin-right:8px">Submit as anonymous (your login remains linked privately so you can track it)</label></div>
+        <div class="wide"><label>Attach Before Photos / Videos (Optional)</label><input id="reportMedia" type="file" accept="image/*,video/*" multiple><p class="upload-note">Maximum 5 files per report. Upload only relevant evidence; avoid sensitive personal information.</p></div>
       </div>
       <button class="success" type="submit">Submit Report</button>
     </form>
     <div id="reportMsg" class="msg hidden"></div>
   </div>
+
+  <div class="card">
+    <h2>🧰 CampusRakshak 3.0 – Student Tools</h2>
+    <div class="tool-tile"><h3>🔔 Report Notifications</h3><p class="small">Browser notifications while this site is open.</p><button type="button" id="enableNotifications">Enable Notifications</button><span id="notificationStatus" class="small"></span></div>
+    <div class="tools-grid">
+      <div class="tool-tile">
+        <h3>🤖 Complaint Assistant</h3>
+        <p class="small">Issue ko clearly likhne ke liye guided help.</p>
+        <button type="button" id="aiHelpBtn">Improve My Description</button>
+        <p class="small" id="aiHelpMsg">Category aur description bharne ke baad button dabayein.</p>
+      </div>
+      <div class="tool-tile">
+        <h3>🚨 Emergency Quick Report</h3>
+        <p class="small">Urgent safety concern ke liye report form fill karein.</p>
+        <button type="button" class="danger" id="emergencyBtn">Prepare Emergency Report</button><button type="button" class="danger" id="sosBtn">Send SOS Alert</button>
+      </div>
+      <div class="tool-tile">
+        <h3>📍 Campus Location</h3>
+        <p class="small">Report mein di hui location ko map par dekhein.</p>
+        <button type="button" id="mapBtn" class="secondary">Open Location in Maps</button>
+      </div>
+      <div class="tool-tile">
+        <h3>🔳 Complaint QR Code</h3>
+        <p class="small">Complaint portal ka QR code generate karein.</p>
+        <button type="button" id="qrBtn">Generate QR Code</button>
+        <img id="qrImage" class="qr-preview hidden" alt="CampusRakshak portal QR code">
+      </div>
+      <div class="tool-tile">
+        <h3>🗳️ Student Feedback Poll</h3>
+        <p class="small">Campus improvement ke liye ek quick vote (is device par save hoga).</p>
+        <select id="pollChoice"><option value="">Choose a priority</option><option>Clean drinking water</option><option>Washroom cleanliness</option><option>Campus security</option><option>Classroom facilities</option><option>Better lighting</option></select>
+        <button type="button" id="pollVoteBtn">Save My Vote</button>
+        <p class="small" id="pollResult"></p>
+      </div>
+      <div class="tool-tile">
+        <h3>🌙 Display</h3>
+        <p class="small">Comfortable viewing ke liye theme badlein.</p>
+        <button type="button" id="themeBtn" class="secondary">Toggle Dark Mode</button>
+      </div>
+    </div>
+  </div>
+
   <div class="card"><h2>📋 My Reports</h2><div id="studentReports">Loading...</div></div>
 </section>
 
@@ -117,6 +179,41 @@ footer strong{display:inline-block;color:var(--navy-2);font-size:14px;letter-spa
     <div class="toolbar"><div><h2>👨‍💼 College Head Dashboard</h2><p id="headEmail" class="small"></p></div><button id="headLogout" class="secondary">Logout</button></div>
     <div id="headStats"></div>
   </div>
+
+  <div class="card">
+    <h2>🧰 Admin Control Centre</h2>
+    <div class="tools-grid">
+      <div class="tool-tile">
+        <h3>👷 Staff Directory</h3>
+        <p class="small">Staff ya department ke naam add karein aur reports assign karein. Directory is browser par save hogi.</p>
+        <div class="inline-field"><input id="staffNameInput" placeholder="Staff / department name"><button type="button" id="addStaffBtn">Add</button></div>
+        <div id="staffList" class="small"></div>
+      </div>
+      <div class="tool-tile">
+        <h3>🛠️ Maintenance Schedule</h3>
+        <input id="maintenanceTask" placeholder="Maintenance task">
+        <input id="maintenanceDate" type="date">
+        <button type="button" id="addMaintenanceBtn">Add Schedule</button>
+        <div id="maintenanceList" class="small"></div>
+      </div>
+      <div class="tool-tile">
+        <h3>📄 Export / PDF</h3>
+        <p class="small">Reports ko print ya Save as PDF kar sakte hain.</p>
+        <button type="button" id="printReportsBtn">Print / Save Reports as PDF</button>
+      </div>
+      <div class="tool-tile">
+        <h3>🕘 Admin Activity History</h3>
+        <p class="small">Is browser par ki gayi recent admin actions.</p>
+        <div id="activityLog"></div>
+      </div>
+      <div class="tool-tile">
+        <h3>🌙 Display</h3>
+        <button type="button" id="themeBtnAdmin" class="secondary">Toggle Dark Mode</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card"><h2>📊 Department / Category Performance</h2><p class="small">Report totals and resolution status by assigned team or category.</p><div id="departmentMetrics"></div></div>
   <div class="card"><h2>🕒 Student Approval Requests</h2><div id="pendingStudents">Loading...</div></div>
   <div class="card">
     <h2>📋 All Student Reports</h2>
@@ -124,6 +221,7 @@ footer strong{display:inline-block;color:var(--navy-2);font-size:14px;letter-spa
     <div id="allReports">Loading...</div>
   </div>
 </section>
+
 </main>
 <footer>CampusRakshak © 2026 <span aria-hidden="true">·</span> College Safety &amp; Issue Reporting<br><strong>Developed by Suraj Pawar</strong></footer>
 
@@ -135,7 +233,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 import {
   getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc,
-  getDocs, query, where, orderBy, serverTimestamp, onSnapshot
+  getDocs, query, where, orderBy, serverTimestamp, onSnapshot, arrayUnion
 } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
 const CLOUDINARY_CLOUD_NAME = "ithmbwvl";
@@ -157,7 +255,93 @@ const db = getFirestore(app);
 const $ = id => document.getElementById(id);
 let currentUser = null, currentRole = null, studentData = null, registrationInProgress = false;
 let stopStudentReports = null, stopHeadReports = null;
+let lastStudentReportStates = new Map();
+
 let allReports = [];
+
+const LOCAL_KEYS={staff:"cr2_staff",maintenance:"cr2_maintenance",activity:"cr2_activity",poll:"cr2_poll"};
+function readLocal(key){try{return JSON.parse(localStorage.getItem(key)||"[]");}catch{return [];}}
+function writeLocal(key,value){localStorage.setItem(key,JSON.stringify(value));}
+function logActivity(message){
+  const entries=readLocal(LOCAL_KEYS.activity);
+  entries.unshift({message,at:new Date().toLocaleString("en-IN")});
+  writeLocal(LOCAL_KEYS.activity,entries.slice(0,30));
+  renderActivity();
+}
+function renderActivity(){
+  const box=$("activityLog"); if(!box)return;
+  const entries=readLocal(LOCAL_KEYS.activity);
+  box.innerHTML="";
+  if(!entries.length){box.textContent="No activity recorded on this browser yet.";return;}
+  entries.slice(0,8).forEach(item=>{
+    const div=document.createElement("div");div.className="audit-entry";
+    div.textContent=item.at+" — "+item.message;box.appendChild(div);
+  });
+}
+function renderStaff(){
+  const box=$("staffList");if(!box)return;
+  const staff=readLocal(LOCAL_KEYS.staff);box.innerHTML="";
+  if(!staff.length){box.textContent="No staff added yet.";return;}
+  staff.forEach((name,i)=>{const row=document.createElement("div");row.className="inline-field";
+    const span=document.createElement("span");span.textContent="• "+name;span.style.flex="1";
+    const del=document.createElement("button");del.className="danger";del.textContent="Remove";del.type="button";
+    del.onclick=()=>{const a=readLocal(LOCAL_KEYS.staff);a.splice(i,1);writeLocal(LOCAL_KEYS.staff,a);renderStaff();};
+    row.append(span,del);box.appendChild(row);
+  });
+}
+function renderMaintenance(){
+  const box=$("maintenanceList");if(!box)return;
+  const items=readLocal(LOCAL_KEYS.maintenance);box.innerHTML="";
+  if(!items.length){box.textContent="No maintenance tasks scheduled.";return;}
+  items.forEach((item,i)=>{const row=document.createElement("div");row.className="audit-entry";
+    row.textContent=(item.date||"No date")+" — "+item.task;
+    const del=document.createElement("button");del.className="danger";del.type="button";del.textContent="×";
+    del.onclick=()=>{const a=readLocal(LOCAL_KEYS.maintenance);a.splice(i,1);writeLocal(LOCAL_KEYS.maintenance,a);renderMaintenance();};
+    row.appendChild(del);box.appendChild(row);
+  });
+}
+function toggleTheme(){document.body.classList.toggle("dark");localStorage.setItem("cr2_dark",document.body.classList.contains("dark")?"1":"0");}
+function initEnhancementTools(){
+  if(localStorage.getItem("cr2_dark")==="1")document.body.classList.add("dark");
+  renderStaff();renderMaintenance();renderActivity();
+  const addStaff=$("addStaffBtn");
+  if(addStaff)addStaff.onclick=()=>{const name=$("staffNameInput").value.trim();if(!name)return;
+    const a=readLocal(LOCAL_KEYS.staff);if(!a.includes(name))a.push(name);writeLocal(LOCAL_KEYS.staff,a);$("staffNameInput").value="";renderStaff();};
+  const addMaint=$("addMaintenanceBtn");
+  if(addMaint)addMaint.onclick=()=>{const task=$("maintenanceTask").value.trim(),date=$("maintenanceDate").value;if(!task)return alert("Please enter a maintenance task.");
+    const a=readLocal(LOCAL_KEYS.maintenance);a.push({task,date});a.sort((x,y)=>(x.date||"").localeCompare(y.date||""));writeLocal(LOCAL_KEYS.maintenance,a);$("maintenanceTask").value="";renderMaintenance();logActivity("Added maintenance task: "+task);};
+  const print=$("printReportsBtn");if(print)print.onclick=()=>window.print();
+  ["themeBtn","themeBtnAdmin"].forEach(id=>{const b=$(id);if(b)b.onclick=toggleTheme;});
+  const ai=$("aiHelpBtn");if(ai)ai.onclick=()=>{
+    const category=$("category").value,description=$("description").value.trim();
+    if(!category||!description){$("aiHelpMsg").textContent="Pehle category aur issue ka short description likhein.";return;}
+    let extra="Please inspect the location, identify the cause, and take corrective action.";
+    if(category==="Safety / Security"||category==="Ragging")extra="Please treat this as a priority safety concern, review it promptly, and take appropriate protective action.";
+    else if(category==="Electrical")extra="Please arrange an electrical inspection and ensure the area is safe before repair.";
+    else if(category==="Washroom"||category==="Cleanliness")extra="Please arrange cleaning and verify the area after the work is completed.";
+    $("description").value=description+"\\n\\nRequested action: "+extra;
+    $("aiHelpMsg").textContent="Description ko clearer banaya gaya hai. Submit karne se pehle check karein.";
+  };
+  const emergency=$("emergencyBtn");if(emergency)emergency.onclick=()=>{
+    $("category").value="Safety / Security";
+    $("description").value="URGENT SAFETY CONCERN: Please review this issue immediately. Describe the exact danger and people/area affected below.\\n";
+    $("description").focus();$("reportForm").scrollIntoView({behavior:"smooth"});
+  };
+  const map=$("mapBtn");if(map)map.onclick=()=>{
+    const loc=$("location").value.trim();if(!loc){alert("Please enter the issue location first.");return;}
+    window.open("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(loc+" college campus"),"_blank","noopener");
+  };
+  const qr=$("qrBtn");if(qr)qr.onclick=()=>{
+    const img=$("qrImage");img.src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data="+encodeURIComponent(location.href);
+    img.classList.remove("hidden");
+  };
+  const vote=$("pollVoteBtn");if(vote)vote.onclick=()=>{
+    const choice=$("pollChoice").value;if(!choice)return alert("Please select one option.");
+    const votes=readLocal(LOCAL_KEYS.poll);votes.push({choice,at:new Date().toISOString()});writeLocal(LOCAL_KEYS.poll,votes);
+    $("pollResult").textContent="Your vote saved on this browser. Total local votes: "+votes.length;
+  };
+}
+
 
 function showMsg(id, text, type="") {
   const el=$(id); el.textContent=text; el.className="msg"+(type ? " "+type : "");
@@ -308,7 +492,9 @@ async function changeApproval(uid,status,button) {
 function subscribeStudentReports() {
   if(stopStudentReports) stopStudentReports();
   const q=query(collection(db,"reports"),where("uid","==",currentUser.uid),orderBy("createdAt","desc"));
+  lastStudentReportStates=new Map();
   stopStudentReports=onSnapshot(q,snap=>{
+    notifyStudentReportChanges(snap);
     const box=$("studentReports"); box.innerHTML="";
     if(snap.empty){box.textContent="You have not submitted any reports yet.";return;}
     snap.forEach(d=>box.appendChild(reportCard({id:d.id,...d.data()},false)));
@@ -322,6 +508,11 @@ function subscribeHeadReports() {
     renderHeadReports();
   },e=>{$("allReports").textContent="Could not load reports: "+friendlyError(e);});
 }
+function enableReportNotifications(){const out=$("notificationStatus");if(!( "Notification" in window)){out.textContent="Browser notifications are not supported.";return;}Notification.requestPermission().then(v=>out.textContent=v==="granted"?"Enabled while the site is open.":"Permission not granted.");}
+function notifyStudentReportChanges(snap){if(!( "Notification" in window)||Notification.permission!=="granted")return;snap.docChanges().forEach(change=>{const d=change.doc.data(),id=change.doc.id;if(change.type==="modified"){const old=lastStudentReportStates.get(id);if(old&&old!==(d.status||"Pending"))new Notification("CampusRakshak: Report Update",{body:`${d.category||"Your report"} is now ${d.status||"Pending"}.`});}lastStudentReportStates.set(id,d.status||"Pending");});}
+async function sendSOS(){if(currentRole!=="student"||!currentUser)return;if(!confirm("Send an urgent SOS report to the College Head? Use only for a real emergency."))return;const button=$("sosBtn");button.disabled=true;let coords=null;try{if(navigator.geolocation)coords=await new Promise(resolve=>navigator.geolocation.getCurrentPosition(pos=>resolve({lat:pos.coords.latitude,lng:pos.coords.longitude}),()=>resolve(null),{timeout:7000,maximumAge:60000}));}catch{}try{await addDoc(collection(db,"reports"),{uid:currentUser.uid,studentId:studentData.collegeId,name:studentData.name,roll:studentData.rollNumber,category:"SOS Emergency",location:coords?`${coords.lat}, ${coords.lng}`:"Campus location not shared",description:"URGENT SOS ALERT: Student has requested immediate campus assistance. Contact the student and verify the situation.",date:new Date().toLocaleString("en-IN"),createdAt:serverTimestamp(),status:"Pending",priority:"Emergency",media:[],timeline:[{status:"Pending",by:"Student SOS",at:new Date().toISOString(),note:"Emergency alert created"}]});alert("SOS report sent to the College Head dashboard. If there is immediate danger, contact campus security or local emergency services directly too.");}catch(e){alert("SOS could not be sent: "+friendlyError(e));}finally{button.disabled=false;}}
+function renderDepartmentMetrics(){const box=$("departmentMetrics");if(!box)return;box.innerHTML="";if(!allReports.length){box.textContent="No report data available yet.";return;}const groups={};allReports.forEach(r=>{const k=r.assignedTo||r.category||"Other";groups[k]??={total:0,open:0,resolved:0};groups[k].total++;if(r.status==="Resolved")groups[k].resolved++;else groups[k].open++;});const grid=document.createElement("div");grid.className="metric-grid";Object.entries(groups).sort((a,b)=>b[1].total-a[1].total).forEach(([name,v])=>{const el=document.createElement("div");el.className="metric";const strong=document.createElement("strong");strong.textContent=v.total;const label=document.createElement("span");label.textContent=`${name} · ${v.resolved} resolved · ${v.open} open`;el.append(strong,label);grid.appendChild(el);});box.appendChild(grid);}
+
 async function uploadReportMedia(files) {
   const uploaded=[];
   for(let i=0;i<files.length;i++) {
@@ -363,7 +554,7 @@ function reportCard(r,isHead) {
   const card=document.createElement("div"); card.className="report";
   const h=document.createElement("h3"); h.textContent="📝 "+(r.category||"Issue"); card.appendChild(h);
   const status=document.createElement("span"); status.className="badge"; status.textContent=r.status||"Pending"; card.appendChild(status);
-  const info=document.createElement("p"); info.textContent=`${r.name||""} | Roll: ${r.roll||""} | 📍 ${r.location||""}`; card.appendChild(info);
+  const info=document.createElement("p"); info.textContent=`${r.anonymous?"Anonymous Student":(r.name||"")} | Roll: ${r.anonymous?"Hidden":(r.roll||"")} | 📍 ${r.location||""}`; card.appendChild(info);
   const desc=document.createElement("p"); desc.textContent=r.description||""; card.appendChild(desc);
   const date=document.createElement("small"); date.className="small"; date.textContent="Report submitted: "+(r.date||""); card.appendChild(date);
   const tracking=document.createElement("div"); tracking.className="tracking";
@@ -375,6 +566,8 @@ function reportCard(r,isHead) {
   if(r.statusNote){const note=document.createElement("p");note.textContent="College Head response: "+r.statusNote;tracking.appendChild(note);}
   if(r.studentDispute){const dispute=document.createElement("p");dispute.textContent="⚠️ The student reported that the issue is still unresolved"+(disputedAt?" ("+disputedAt+")":"") ;tracking.appendChild(dispute);}
   card.appendChild(tracking);
+  if(Array.isArray(r.timeline)&&r.timeline.length){const timeline=document.createElement("div");timeline.className="timeline";const title=document.createElement("strong");title.textContent="🧭 Complete Complaint Timeline";timeline.appendChild(title);r.timeline.forEach(item=>{const entry=document.createElement("div");entry.className="timeline-item";entry.textContent=`${item.status||"Update"} · ${item.at?new Date(item.at).toLocaleString("en-IN"):"Time unavailable"}${item.by?" · "+item.by:""}${item.note?" — "+item.note:""}`;timeline.appendChild(entry);});card.appendChild(timeline);}
+  if(r.priority==="Emergency"||r.category==="SOS Emergency")card.classList.add("urgent-report");
   const age=reportAgeDays(r);
   const isOpen=!["Resolved","Rejected"].includes(r.status);
   if(isOpen && age>=7) {
@@ -383,6 +576,13 @@ function reportCard(r,isHead) {
     card.appendChild(warning);
   }
   appendReportMedia(card,r.media);
+  if(Array.isArray(r.beforeAfterMedia)&&r.beforeAfterMedia.length){
+    const mediaTitle=document.createElement("p");mediaTitle.textContent="📸 Completion / After Evidence";mediaTitle.style.fontWeight="700";card.appendChild(mediaTitle);
+    appendReportMedia(card,r.beforeAfterMedia);
+  }
+  if(r.assignedTo){const assigned=document.createElement("p");assigned.textContent="👷 Assigned to: "+r.assignedTo;card.appendChild(assigned);}
+  const mapLink=document.createElement("a");mapLink.href="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent((r.location||"")+" college campus");
+  mapLink.target="_blank";mapLink.rel="noopener";mapLink.textContent="Open issue location in Google Maps";card.appendChild(mapLink);
   if(isHead) {
     const label=document.createElement("label"); label.textContent="Update report status"; card.appendChild(label);
     const sel=document.createElement("select");
@@ -395,6 +595,7 @@ function reportCard(r,isHead) {
       try{
         await updateDoc(doc(db,"reports",r.id),{
           status:nextStatus,statusNote:note.trim().slice(0,500),statusUpdatedAt:serverTimestamp(),
+          timeline:arrayUnion({status:nextStatus,by:currentUser.email||"College Head",at:new Date().toISOString(),note:note.trim().slice(0,300)}),
           ...(nextStatus==="Resolved"?{studentDispute:false}:{})
         });
       }catch(e){alert("Could not update status: "+friendlyError(e));sel.value=r.status||"Pending";}
@@ -402,13 +603,32 @@ function reportCard(r,isHead) {
     };
     card.appendChild(sel);
     if(r.studentDispute){const flag=document.createElement("p");flag.className="escalation";flag.textContent="The student disputed the resolution — further review is required.";card.appendChild(flag);}
+    const assignLabel=document.createElement("label");assignLabel.textContent="Assign staff / department";card.appendChild(assignLabel);
+    const assignRow=document.createElement("div");assignRow.className="inline-field";
+    const assignSelect=document.createElement("select");
+    const currentAssign=document.createElement("option");currentAssign.value="";currentAssign.textContent="Choose staff";assignSelect.appendChild(currentAssign);
+    readLocal(LOCAL_KEYS.staff).forEach(name=>{const o=document.createElement("option");o.value=name;o.textContent=name;o.selected=name===r.assignedTo;assignSelect.appendChild(o);});
+    const custom=document.createElement("option");custom.value="__custom";custom.textContent="Enter another name…";assignSelect.appendChild(custom);
+    const assignBtn=document.createElement("button");assignBtn.type="button";assignBtn.textContent="Save Assignment";
+    assignBtn.onclick=async()=>{let value=assignSelect.value;if(value==="__custom")value=prompt("Enter staff / department name:",r.assignedTo||"")||"";
+      if(!value.trim())return alert("Choose a staff member or department.");assignBtn.disabled=true;try{await updateDoc(doc(db,"reports",r.id),{assignedTo:value.trim(),assignedToEmail:"",timeline:arrayUnion({status:r.status||"Pending",by:currentUser.email||"College Head",at:new Date().toISOString(),note:"Assigned to "+value.trim()})});logActivity("Assigned report "+r.id+" to "+value.trim());}
+      catch(e){alert("Assignment failed: "+friendlyError(e));}finally{assignBtn.disabled=false;}};
+    assignRow.append(assignSelect,assignBtn);card.appendChild(assignRow);
+    const evidenceLabel=document.createElement("label");evidenceLabel.textContent="Upload After / Completion Photos or Video";card.appendChild(evidenceLabel);
+    const evidenceInput=document.createElement("input");evidenceInput.type="file";evidenceInput.accept="image/*,video/*";evidenceInput.multiple=true;card.appendChild(evidenceInput);
+    const evidenceBtn=document.createElement("button");evidenceBtn.type="button";evidenceBtn.className="success";evidenceBtn.textContent="Save Completion Evidence";
+    evidenceBtn.onclick=async()=>{const files=Array.from(evidenceInput.files||[]);if(!files.length)return alert("Choose at least one file.");
+      if(files.length>5)return alert("Maximum 5 files at a time.");evidenceBtn.disabled=true;
+      try{const uploaded=await uploadReportMedia(files);await updateDoc(doc(db,"reports",r.id),{beforeAfterMedia:[...(r.beforeAfterMedia||[]),...uploaded]});logActivity("Added completion evidence to report "+r.id);}
+      catch(e){alert("Evidence upload failed: "+friendlyError(e));}finally{evidenceBtn.disabled=false;}};
+    card.appendChild(evidenceBtn);
   } else if(r.status==="Resolved" && !r.studentDispute) {
     const disputeBtn=document.createElement("button"); disputeBtn.className="danger"; disputeBtn.textContent="Issue not resolved — Reopen report";
     disputeBtn.onclick=async()=>{
       if(!confirm("Is the issue still unresolved? The report will be moved back to In Progress.")) return;
       disputeBtn.disabled=true;
       try{
-        await updateDoc(doc(db,"reports",r.id),{status:"In Progress",studentDispute:true,disputedAt:serverTimestamp()});
+        await updateDoc(doc(db,"reports",r.id),{status:"In Progress",studentDispute:true,disputedAt:serverTimestamp(),timeline:arrayUnion({status:"In Progress",by:currentUser.email||"Student",at:new Date().toISOString(),note:"Student requested reopening"})});
       }catch(e){alert("Could not reopen report: "+friendlyError(e));disputeBtn.disabled=false;}
     };
     card.appendChild(disputeBtn);
@@ -433,7 +653,18 @@ function renderHeadReports() {
   $("headStats").textContent=`Total Reports: ${allReports.length} | Pending: ${allReports.filter(r=>r.status==="Pending").length} | In Progress: ${allReports.filter(r=>r.status==="In Progress").length} | Resolved: ${allReports.filter(r=>r.status==="Resolved").length}`;
   if(!filtered.length){box.textContent="No reports found.";return;}
   filtered.forEach(r=>box.appendChild(reportCard(r,true)));
+  renderDepartmentMetrics();
 }
+
+// QR generator: creates a QR code for the currently deployed portal URL.
+$("qrBtn")?.addEventListener("click",()=>{
+  const image=$("qrImage");
+  if(!image) return;
+  const portalUrl=window.location.href.split("#")[0];
+  image.src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data="+encodeURIComponent(portalUrl);
+  image.alt="QR code for CampusRakshak portal";
+  image.classList.remove("hidden");
+});
 
 $("authMode").addEventListener("change",()=>{
   const reg=$("authMode").value==="register";
@@ -461,11 +692,12 @@ $("reportForm").addEventListener("submit",async e=>{
     showMsg("reportMsg",selectedFiles.length?"Uploading media, please wait...":"Submitting report...");
     const media=selectedFiles.length?await uploadReportMedia(selectedFiles):[];
     await addDoc(collection(db,"reports"),{
-      uid:currentUser.uid, studentId:studentData.collegeId, name, roll,
-      category, location, description, date:new Date().toLocaleString("en-IN"),
-      createdAt:serverTimestamp(), status:"Pending", votes:0, media
+      uid:currentUser.uid, studentId:studentData.collegeId, name:$("anonymousReport").checked?"Anonymous Student":name, roll:$("anonymousReport").checked?"Hidden":roll,
+      anonymous:$("anonymousReport").checked, category, location, description, date:new Date().toLocaleString("en-IN"),
+      createdAt:serverTimestamp(), status:"Pending", votes:0, media, priority:"Normal",
+      timeline:[{status:"Pending",by:$("anonymousReport").checked?"Anonymous Student":name,at:new Date().toISOString(),note:"Report submitted"}]
     });
-    $("description").value=""; $("location").value=""; $("category").value=""; $("reportMedia").value="";
+    $("description").value=""; $("location").value=""; $("category").value=""; $("reportMedia").value=""; $("anonymousReport").checked=false;
     showMsg("reportMsg","Your report and media were submitted successfully.","ok");
   } catch(e) { showMsg("reportMsg","Report/media upload failed: "+friendlyError(e),"error"); }
   finally { submitButton.disabled=false; }
@@ -475,6 +707,9 @@ $("pendingLogout").addEventListener("click",logout);
 $("rejectedLogout").addEventListener("click",logout);
 $("studentLogout").addEventListener("click",logout);
 $("headLogout").addEventListener("click",logout);
+// Removed obsolete staff-login listener; staff login is not used.
+$("enableNotifications").addEventListener("click",enableReportNotifications);
+$("sosBtn").addEventListener("click",sendSOS);
 $("reportSearch").addEventListener("input",renderHeadReports);
 $("reportFilter").addEventListener("change",renderHeadReports);
 
@@ -483,6 +718,7 @@ async function logout() {
   try { await signOut(auth); } catch(e) { console.error(e); }
   showLogin();
 }
+initEnhancementTools();
 onAuthStateChanged(auth,async user=>{
   if(!user || registrationInProgress) return;
   currentUser=user;
